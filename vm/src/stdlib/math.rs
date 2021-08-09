@@ -153,6 +153,11 @@ fn math_isqrt(x: PyObjectRef, vm: &VirtualMachine) -> PyResult<BigInt> {
     Ok(value.sqrt())
 }
 
+fn math_cbrt(value: IntoPyFloat, _vm: &VirtualMachine) -> PyResult<f64> {
+    let value = value.to_f64();
+    Ok(value.cbrt())
+}
+
 // Trigonometric functions:
 fn math_acos(x: IntoPyFloat, vm: &VirtualMachine) -> PyResult<f64> {
     let x = x.to_f64();
@@ -648,6 +653,7 @@ pub fn make_module(vm: &VirtualMachine) -> PyObjectRef {
         "pow" => named_function!(ctx, math, pow),
         "sqrt" => named_function!(ctx, math, sqrt),
         "isqrt" => named_function!(ctx, math, isqrt),
+        "cbrt" => named_function!(ctx, math, cbrt),
 
         // Trigonometric functions:
         "acos" => named_function!(ctx, math, acos),

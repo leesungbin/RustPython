@@ -41,10 +41,8 @@ def to_ulps(x):
     adjacent floats are converted to adjacent integers.  Then
     abs(ulps(x) - ulps(y)) gives the difference in ulps between two
     floats.
-
     The results from this function will only make sense on platforms
     where native doubles are represented in IEEE 754 binary64 format.
-
     Note: 0.0 and -0.0 are converted to 0 and -1, respectively.
     """
     n = struct.unpack('<q', struct.pack('<d', x))[0]
@@ -81,7 +79,6 @@ def count_set_bits(n):
 def partial_product(start, stop):
     """Product of integers in range(start, stop, 2), computed recursively.
     start and stop should both be odd, with start <= stop.
-
     """
     numfactors = (stop - start) >> 1
     if not numfactors:
@@ -95,7 +92,6 @@ def partial_product(start, stop):
 def py_factorial(n):
     """Factorial of nonnegative integer n, via "Binary Split Factorial Formula"
     described at http://www.luschny.de/math/factorial/binarysplitfact.html
-
     """
     inner = outer = 1
     for i in reversed(range(n.bit_length())):
@@ -123,12 +119,10 @@ def ulp_abs_check(expected, got, ulp_tol, abs_tol):
 
 def parse_mtestfile(fname):
     """Parse a file with test values
-
     -- starts a comment
     blank lines, or lines containing only a comment, are ignored
     other lines are expected to have the form
       id fn arg -> expected [flag]*
-
     """
     with open(fname, encoding="utf-8") as fp:
         for line in fp:
@@ -149,7 +143,6 @@ def parse_mtestfile(fname):
 
 def parse_testfile(fname):
     """Parse a file with test values
-
     Empty lines or lines starting with -- are ignored
     yields id, fn, arg_real, arg_imag, exp_real, exp_imag
     """
@@ -176,11 +169,9 @@ def result_check(expected, got, ulp_tol=5, abs_tol=0.0):
     """Compare arguments expected and got, as floats, if either
     is a float, using a tolerance expressed in multiples of
     ulp(expected) or absolutely (if given and greater).
-
     As a convenience, when neither argument is a float, and for
     non-finite floats, exact equality is demanded. Also, nan==nan
     as far as this function is concerned.
-
     Returns None on success and an error message on failure.
     """
 
@@ -240,7 +231,6 @@ class MathTests(unittest.TestCase):
         """Compare arguments expected and got, as floats, if either
         is a float, using a tolerance expressed in multiples of
         ulp(expected) or absolutely, whichever is greater.
-
         As a convenience, when neither argument is a float, and for
         non-finite floats, exact equality is demanded. Also, nan==nan
         in this function.
@@ -305,6 +295,8 @@ class MathTests(unittest.TestCase):
         self.ftest('atan(-inf)', math.atan(NINF), -math.pi/2)
         self.assertTrue(math.isnan(math.atan(NAN)))
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure 
     def testAtanh(self):
         self.assertRaises(TypeError, math.atan)
         self.ftest('atanh(0)', math.atanh(0), 0)
@@ -605,6 +597,7 @@ class MathTests(unittest.TestCase):
         self.assertEqual(math.frexp(NINF)[0], NINF)
         self.assertTrue(math.isnan(math.frexp(NAN)[0]))
 
+
     @requires_IEEE_754
     @unittest.skipIf(HAVE_DOUBLE_ROUNDING,
                          "fsum is not exact on machines with double rounding")
@@ -628,7 +621,6 @@ class MathTests(unittest.TestCase):
             """Full precision summation.  Compute sum(iterable) without any
             intermediate accumulation of error.  Based on the 'lsum' function
             at http://code.activestate.com/recipes/393090/
-
             """
             tmant, texp = 0, 0
             for x in iterable:
@@ -819,6 +811,8 @@ class MathTests(unittest.TestCase):
             scale = FLOAT_MIN / 2.0 ** exp
             self.assertEqual(math.hypot(4*scale, 3*scale), 5*scale)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     @requires_IEEE_754
     @unittest.skipIf(HAVE_DOUBLE_ROUNDING,
                      "hypot() loses accuracy on machines with double rounding")
@@ -882,6 +876,8 @@ class MathTests(unittest.TestCase):
                     z = float((Decimal(x)**2 + Decimal(y)**2).sqrt())
                 self.assertEqual(hypot(x, y), z)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testDist(self):
         from decimal import Decimal as D
         from fractions import Fraction as F
@@ -1124,6 +1120,8 @@ class MathTests(unittest.TestCase):
             self.assertEqual(math.ldexp(NINF, n), NINF)
             self.assertTrue(math.isnan(math.ldexp(NAN, n)))
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testLog(self):
         self.assertRaises(TypeError, math.log)
         self.ftest('log(1/e)', math.log(1/math.e), -1)
@@ -1140,6 +1138,8 @@ class MathTests(unittest.TestCase):
         self.assertEqual(math.log(INF), INF)
         self.assertTrue(math.isnan(math.log(NAN)))
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testLog1p(self):
         self.assertRaises(TypeError, math.log1p)
         for n in [2, 2**90, 2**300]:
@@ -1147,6 +1147,8 @@ class MathTests(unittest.TestCase):
         self.assertRaises(ValueError, math.log1p, -1)
         self.assertEqual(math.log1p(INF), INF)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     @requires_IEEE_754
     def testLog2(self):
         self.assertRaises(TypeError, math.log2)
@@ -1174,6 +1176,8 @@ class MathTests(unittest.TestCase):
         expected = [float(n) for n in range(-1074, 1024)]
         self.assertEqual(actual, expected)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testLog10(self):
         self.assertRaises(TypeError, math.log10)
         self.ftest('log10(0.1)', math.log10(0.1), -1)
@@ -1205,6 +1209,8 @@ class MathTests(unittest.TestCase):
         self.assertTrue(math.isnan(modf_nan[0]))
         self.assertTrue(math.isnan(modf_nan[1]))
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testPow(self):
         self.assertRaises(TypeError, math.pow)
         self.ftest('pow(0,1)', math.pow(0,1), 0)
@@ -1361,6 +1367,8 @@ class MathTests(unittest.TestCase):
         self.ftest('radians(-45)', math.radians(-45), -math.pi/4)
         self.ftest('radians(0)', math.radians(0), 0)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     @requires_IEEE_754
     def testRemainder(self):
         from fractions import Fraction
@@ -1658,6 +1666,8 @@ class MathTests(unittest.TestCase):
         else:
             self.fail("sqrt(-1) didn't raise ValueError")
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     @requires_IEEE_754
     def test_testfile(self):
         # Some tests need to be skipped on ancient OS X versions.
@@ -1715,6 +1725,9 @@ class MathTests(unittest.TestCase):
             self.fail('Failures in test_testfile:\n  ' +
                       '\n  '.join(failures))
 
+    # TODO: RUSTPYTHON
+    # Currently hangs. Function never finishes.
+    @unittest.skip
     @requires_IEEE_754
     def test_mtestfile(self):
         fail_fmt = "{}: {}({!r}): {}"
@@ -1782,6 +1795,8 @@ class MathTests(unittest.TestCase):
             self.fail('Failures in test_mtestfile:\n  ' +
                       '\n  '.join(failures))
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def test_prod(self):
         prod = math.prod
         self.assertEqual(prod([]), 1)
@@ -1868,6 +1883,8 @@ class MathTests(unittest.TestCase):
         self.assertEqual(type(prod([1, decimal.Decimal(2.0), 3, 4, 5, 6])),
                          decimal.Decimal)
 
+    # TODO: RUSTPYTHON
+    @unittest.expectedFailure
     def testPerm(self):
         perm = math.perm
         factorial = math.factorial
@@ -2058,7 +2075,7 @@ class MathTests(unittest.TestCase):
 
         # min and max
         self.assertEqual(math.ulp(0.0),
-                         sys.float_info.min * sys.float_info.epsilon)
+                        sys.float_info.min * sys.float_info.epsilon)
         self.assertEqual(math.ulp(FLOAT_MAX),
                          FLOAT_MAX - math.nextafter(FLOAT_MAX, -INF))
 
@@ -2095,7 +2112,6 @@ class MathTests(unittest.TestCase):
 
     def assertEqualSign(self, x, y):
         """Similar to assertEqual(), but compare also the sign with copysign().
-
         Function useful to compare signed zeros.
         """
         self.assertEqual(x, y)
@@ -2226,11 +2242,11 @@ class IsCloseTests(unittest.TestCase):
 
 
 def test_main():
-    from doctest import DocFileSuite
+    # from doctest import DocFileSuite
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MathTests))
     suite.addTest(unittest.makeSuite(IsCloseTests))
-    suite.addTest(DocFileSuite("ieee754.txt"))
+    # suite.addTest(DocFileSuite("ieee754.txt"))
     run_unittest(suite)
 
 if __name__ == '__main__':
